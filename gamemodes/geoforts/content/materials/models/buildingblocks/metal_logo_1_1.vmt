@@ -1,0 +1,6 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/buildingblocks/metal_logo_1_1"
+	"$surfaceprop" "metal"
+	"$model" 1
+}

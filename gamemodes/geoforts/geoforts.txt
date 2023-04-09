@@ -1,0 +1,12 @@
+"geoforts"
+{
+	"base"		"base"
+	"title"		"GeoForts Reloaded"
+	"category"	"pvp"
+	"maps"		"^gf_"
+	"menusystem"	"1"
+
+	"author_name"	"(C) Night-Eagle"
+	"author_email"	"gmail sedhdi"
+	"author_url"	""
+}

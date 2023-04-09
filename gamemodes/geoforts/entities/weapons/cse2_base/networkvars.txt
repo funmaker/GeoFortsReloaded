@@ -1,0 +1,14 @@
+NWInt	csi		Current ironsight mode
+					0	Disabled
+					1	Ironsights
+					2	Scope 2x
+					3	Scope 8x
+NWBool	cs		Ironsights enabled
+NWInt	fm		Current firemode
+					fmlisti	fmlist	fmlistn
+						1	semi	Semi-Automatic
+						2	burst	Burst
+						3	auto	Fully-Automatic
+						4	pump	Pump
+NWBool	si		Silencer attached
+NWFloat	lii		Last shot iron idle
