@@ -305,6 +305,7 @@ function GM:Think()
                 for team, team in pairs(self.geof.flags) do
                     for flag, flag in pairs(team) do
                         local ent = flag:GetTable()
+                        flag:GetPhysicsObject():EnableMotion(false)
                         flag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
                         ent:GoHome()
                     end
@@ -321,6 +322,7 @@ function GM:Think()
 
                 for team, team in pairs(self.geof.flags) do
                     for flag, flag in pairs(team) do
+                        flag:GetPhysicsObject():EnableMotion(false)
                         flag:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE)
                     end
                 end
@@ -392,15 +394,11 @@ function GM:Think()
                         ent.lastpos = flag:GetPos()
                         ent.lastang = flag:GetAngles()
                         --if team.GetNum(iteam) ~= 0 and self.geof.teams[iteam].qualify ~= 0 then
+                        flag:GetPhysicsObject():EnableMotion(false)
                         flag:SetCollisionGroup(COLLISION_GROUP_WEAPON)
                         --else
                         --FIXME DISABLE THE FLAG!!!
                         --end
-                        local phys = flag:GetPhysicsObject()
-
-                        if phys:IsValid() then
-                            phys:EnableMotion(false)
-                        end
                     end
                 end
 

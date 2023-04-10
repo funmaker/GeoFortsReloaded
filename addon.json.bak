@@ -9,7 +9,6 @@
 		"*.svn*",
 		".git/*",
 		".assets/*",
-		".idea/*",
-		".vscode/*"
+		".idea/*"
 	]
 }

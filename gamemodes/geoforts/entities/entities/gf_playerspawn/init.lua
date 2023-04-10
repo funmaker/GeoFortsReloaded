@@ -45,8 +45,7 @@ function ENT:Think()
 
     local trace = util.QuickTrace(self:GetPos() + self:GetUp(), self:GetUp() * 1)
     if trace.Hit then
-        self:GetPhysicsObject():EnableMotion()
-        self:ForcePlayerDrop(false)
+        self:GetPhysicsObject():EnableMotion(false)
         self:resetposang()
     end
 end
