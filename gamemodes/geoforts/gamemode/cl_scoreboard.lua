@@ -1,6 +1,6 @@
-surface.MyCreateFont("Trebuchet", 24, 400, true, false, "ScoreboardText")
-surface.MyCreateFont("Trebuchet", 30, 400, true, false, "ScoreboardSub")
-surface.MyCreateFont("Trebuchet", 36, 400, true, false, "ScoreboardHead")
+surface.MyCreateFont("Trebuchet24", 24, 400, true, false, "ScoreboardText")
+surface.MyCreateFont("Trebuchet24", 30, 400, true, false, "ScoreboardSub")
+surface.MyCreateFont("Trebuchet24", 36, 400, true, false, "ScoreboardHead")
 
 --[[---------------------------------------------------------
    Name: gamemode:ScoreboardShow( )

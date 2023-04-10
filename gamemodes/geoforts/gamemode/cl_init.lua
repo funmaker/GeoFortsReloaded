@@ -258,7 +258,7 @@ function GM:ShowHelp()
         local labels = {"Summary", "Preround", "Build", "Qualify", "Fight", "Tips"}
 
         local texts = {
-[[Welcome to Geoforts!
+[[Welcome to GeoForts!
 
 Objective:
 Build a fort to protect the flag, fight the enemy to capture the enemy flag.

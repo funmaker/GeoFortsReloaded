@@ -128,7 +128,6 @@ function ENT:Think()
             else
                 self.cleared = "ERROR:\nNON-ORGANIC\nBLOCKAGE"
                 self.Entity:EmitSound("buttons/combine_button1.wav")
-                PrintTable(trace)
             end
 
             self.warn = Color(255, 255, 255, 100)

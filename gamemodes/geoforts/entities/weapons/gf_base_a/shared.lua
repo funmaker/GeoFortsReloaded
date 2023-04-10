@@ -16,7 +16,7 @@ if CLIENT then
     surface.MyCreateFont("csd", ScreenScale(60), 500, true, true, "CSSelectIcons")
 end
 
-SWEP.Base = "cse_base"
+SWEP.Base = "cse2_base"
 SWEP.Spawnable = false
 SWEP.AdminSpawnable = false
 SWEP.Primary.Sound = Sound("Weapon_AK47.Single")

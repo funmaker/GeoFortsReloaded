@@ -432,7 +432,6 @@ function GM:Think()
                 for k, out in pairs(act) do
                     out[5] = tonumber(out[5])
 
-                    PrintTable(out)
                     for ent, ent in pairs(ents.FindByName(out[1])) do
                         ent:Fire(out[2], out[3], out[4])
                     end
@@ -1530,8 +1529,7 @@ hook.Add("PhysgunPickup", "Gamemode_GeoForts", function(pl, ent)
     return
 end)
 
---"Armor Fix
-AddCSLuaFile("armorfix.lua")
+-- Armor Fix
 hudaf = {}
 
 function hudarmorfixThink()
