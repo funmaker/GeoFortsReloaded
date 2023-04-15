@@ -2,9 +2,6 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include('shared.lua')
 
-function ENT:OnRemove()
-end
-
 function ENT:KeyValue(key, value)
     if key == "TeamNum" then
         local val = tonumber(value)
@@ -19,16 +16,21 @@ function ENT:KeyValue(key, value)
 end
 
 function ENT:Initialize()
-    self.Entity:SetModel("models/roller_spikes.mdl")
-    self.Entity:PhysicsInit(SOLID_VPHYSICS)
-    self.Entity:SetMoveType(MOVETYPE_VPHYSICS)
-    self.Entity:SetSolid(SOLID_VPHYSICS)
-    self.Entity:SetCollisionGroup(COLLISION_GROUP_WEAPON)
-    local phys = self.Entity:GetPhysicsObject()
+    self:SetModel("models/roller_spikes.mdl")
+    self:PhysicsInit(SOLID_VPHYSICS)
+    self:SetMoveType(MOVETYPE_VPHYSICS)
+    self:SetSolid(SOLID_VPHYSICS)
+    self:SetCollisionGroup(COLLISION_GROUP_WEAPON)
+    local phys = self:GetPhysicsObject()
 
     if phys:IsValid() then
         phys:EnableMotion(false)
+        phys:AddGameFlag(FVPHYSICS_NO_PLAYER_PICKUP)
     end
+end
+
+function ENT:GravGunPunt()
+    return false
 end
 
 function ENT:Use()
@@ -36,8 +38,8 @@ end
 
 function ENT:resetposang()
     if self.startpos and self.startang then
-        self.Entity:SetPos(self.startpos)
-        self.Entity:SetAngles(self.startang)
+        self:SetPos(self.startpos)
+        self:SetAngles(self.startang)
     end
 end
 

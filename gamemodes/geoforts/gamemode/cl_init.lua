@@ -627,55 +627,6 @@ usermessage.Hook("gfopt", GM.ShowHook)
 --Panel
 GM.gfweaponpanel = {
     Init = function(self)
-        self:GetParent():GetTable().m = {
-            x = 0,
-            y = 0,
-        }
-    end,
-    Paint = function(self)
-        local d = self:GetParent():GetTable()
-        local m = d.m
-
-        local c = {
-            [1] = Color(0, 0, 0, 50),
-            [2] = Color(50, 100, 255, 100),
-            [3] = Color(255, 0, 0, 100),
-            [4] = Color(0, 255, 0, 100),
-        }
-
-        --DEBUG CURSOR
-        if false then
-            surface.SetDrawColor(0, 0, 0, 100)
-            surface.DrawRect(m.x, m.y, 16, 8)
-            surface.SetFont("Trebuchet18")
-            draw.RoundedBox(4, m.x + 16, m.y, surface.GetTextSize(tostring(m.debug)) + 16, 24, Color(0, 0, 0, 100))
-            draw.DrawText(tostring(m.debug), "Trebuchet18", m.x + 16 + 8, m.y + 4, Color(255, 255, 255, 255), 0)
-        end
-    end,
-    OnCursorMoved = function(self, x, y)
-        self:GetParent():GetTable().m.x = x
-        self:GetParent():GetTable().m.y = y
-    end,
-    OnCursorExited = function(self)
-        self:GetParent():GetTable().m.x = 0
-        self:GetParent():GetTable().m.y = 0
-        self:GetParent():GetTable().m.c = 0
-        self:GetParent():GetTable().m.f = 0
-    end,
-    OnMousePressed = function(self, mc)
-        self:GetParent():GetTable().m.c = 1
-        self:GetParent():GetTable().m.f = 0
-    end,
-    OnMouseReleased = function(self, mc)
-        self:GetParent():GetTable().m.c = -1
-    end,
-}
-
-vgui.Register("gfweaponpanel", GM.gfweaponpanel)
-
---Panel
-GM.gfweaponpanel = {
-    Init = function(self)
         local GM = gmod.GetGamemode()
 
         self:GetParent():GetTable().m = {

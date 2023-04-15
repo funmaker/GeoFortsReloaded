@@ -88,13 +88,15 @@ GM.geof.rounds = {
 --Fight
 --(Duplicity Initialize)
 GM.geof.round = {
-    cur = 1,
-    time = CurTime() + GM.geof.rounds[1].time
+    cur = 0,
+    time = 0
 }
 
 GM.geof.players = {}
 GM.geof.teams = {}
+GM.geof.roundEnts = {}
 GM.geof.nextbodyque = CurTime() + 1
+GM.geof.nextDropCrate = CurTime() + 1
 --Cosntants
 GM.geof.const = {}
 GM.geof.const.flagautoreturn = 30
@@ -103,12 +105,14 @@ GM.geof.const.respawninterval = 3
 GM.geof.const.respawnblockingmax = 1
 GM.geof.const.nocappenalty = .5
 GM.geof.const.allowmultiteamswitch = true
+GM.geof.const.dropCrateCooldownMin = 30
+GM.geof.const.dropCrateCooldownMax = 90
 
 function GM:Initialize()
     --(Duplicity Declarations)
     self.geof.round = {
-        cur = 1,
-        time = CurTime() + self.geof.rounds[1].time
+        cur = 0,
+        time = 0,
     }
 
     for i = 1, 4 do
@@ -182,6 +186,10 @@ function GM:InitPostEntity()
             end
         end
     end
+end
+
+function GM:AddRoundEntity(ent)
+    table.insert(self.geof.roundEnts, ent)
 end
 
 function ccgf_nextround(pl, cmd, args)
@@ -285,6 +293,28 @@ function GM:Think()
         end
     end
 
+    if self.geof.nextDropCrate < CurTime() and self.geof.round.cur == 4 then
+        self.geof.nextDropCrate = CurTime() + math.Rand(self.geof.const.dropCrateCooldownMin, self.geof.const.dropCrateCooldownMax)
+
+        local spawns = ents.FindByClass("gf_qualifyspawn")
+        if #spawns > 0 then
+            local spawn = spawns[math.random(#spawns)]
+            local trace = util.TraceLine{
+                start = spawn:GetPos(),
+                endpos = spawn:GetUp() * 5000,
+                collisiongroup = COLLISION_GROUP_WORLD,
+            }
+
+            local crate = ents.Create("gf_dropcrate")
+            crate:SetPos(trace.HitPos - Vector(0, 0, 50))
+            crate:Spawn()
+            self:AddRoundEntity(crate)
+
+            crate:EmitSound("buttons/blip2.wav", 511)
+            PrintMessage(HUD_PRINTCENTER, "Extra supplies have arrived")
+        end
+    end
+
     if self.geof.round.time < CurTime() or ready then
         --Change the round
         self.geof.round.cur = self.geof.round.cur + 1
@@ -295,11 +325,18 @@ function GM:Think()
 
         self.geof.round.time = CurTime() + self.geof.rounds[self.geof.round.cur].time
 
+        for _, ent in pairs(self.geof.roundEnts) do
+            if ent:IsValid() then ent:Remove() end
+        end
+        self.geof.roundEnts = {}
+
         --FIXME: WARNING: Requies 1 gf_gametimer to work properly
         for k, v in pairs(ents.FindByClass("gf_gametimer")) do
             local action
 
-            if self.geof.round.cur == 2 then
+            if self.geof.round.cur == 1 then
+                action = "OnFight"
+            elseif self.geof.round.cur == 2 then
                 action = "OnBuild"
 
                 for team, team in pairs(self.geof.flags) do
@@ -481,10 +518,6 @@ function GM:Think()
     end
 end
 
---Called when an entity has a keyvalue set, Returning a string it will override the value
-function GM:EntityKeyValue(ent, key, value)
-end
-
 function GM:DoPlayerDeath(pl, attacker, dmginfo)
     pl:CreateRagdoll()
 
@@ -500,7 +533,32 @@ function GM:DoPlayerDeath(pl, attacker, dmginfo)
     end
 end
 
-function GM:EntityTakeDamage(ent, inflictor, attacker, amount)
+function GM:GravGunPunt(ply, ent)
+    if ent:IsValid() and ent.GravGunPunt then
+        return ent:GravGunPunt(ply)
+    end
+
+    return true
+end
+
+function GM:GravGunPickupAllowed(ply, ent)
+    if ent:IsValid() and ent.GravGunPickupAllowed then
+        return ent:GravGunPickupAllowed(ply)
+    end
+
+    return true
+end
+
+function GM:GravGunOnPickedUp(ply, ent)
+    if ent:IsValid() and ent.GravGunOnPickedUp then
+        ent:GravGunOnPickedUp(ply)
+    end
+end
+
+function GM:GravGunOnDropped(ply, ent)
+    if ent:IsValid() and ent.GravGunOnDropped then
+        ent:GravGunOnDropped(ply)
+    end
 end
 
 --[[Hostname check function
@@ -575,7 +633,6 @@ concommand.Add("gftag", GM.ccgftag)
 function GM:flagtag(pl, flag)
     --MULTIFLAG //FIXME
     local plid = pl:UniqueID()
-    flag:EmitSound(Sound("items/battery_pickup.wav"))
 
     --Fight
     if self.geof.round.cur == 4 then
@@ -583,12 +640,19 @@ function GM:flagtag(pl, flag)
             self.geof.players[plid].flag = flag
             flag:GoPlayerGrab(pl)
             pl:SetNWInt("gfflag", flag:GetTable().team)
+
+            flag:EmitSound(Sound("items/battery_pickup.wav"), 511)
+            PrintMessage(HUD_PRINTCENTER, "Team " .. team.GetName(pl:Team()) .. " has picked up " .. team.GetName(flag:GetTable().team) .. "'s flag!")
         elseif self.geof.players[plid].flag and flag:GetTable().team == pl:Team() then
+            local losers = self.geof.players[plid].flag:GetTable().team
             self.geof.players[plid].flag:GoHome()
             --Score! (The team module is corrupt, so we have to use our own scoring system.)
             self.geof.teams[pl:Team()].score = self.geof.teams[pl:Team()].score + 1
-            self.geof.teams[self.geof.players[plid].flag:GetTable().team].score = self.geof.teams[self.geof.players[plid].flag:GetTable().team].score - 1
+            self.geof.teams[losers].score = self.geof.teams[losers].score - 1
             self.geof.players[plid].flag = nil
+
+            flag:EmitSound(Sound("items/battery_pickup.wav"), 511)
+            PrintMessage(HUD_PRINTCENTER, "Team " .. team.GetName(pl:Team()) .. " has captured " .. team.GetName(losers) .. "'s flag!")
 
             for k, pl in pairs(player.GetAll()) do
                 if pl:IsValid() and pl:IsConnected() then
@@ -606,9 +670,9 @@ function GM:flagtag(pl, flag)
         end
     elseif self.geof.round.cur == 3 then
         --Qualify
-        local plid = pl:UniqueID()
         self.geof.players[plid].qflag = true
         pl:SetNWInt("gfflag", flag:GetTable().team)
+        flag:EmitSound(Sound("items/battery_pickup.wav"), 511)
     end
 end
 
@@ -742,7 +806,7 @@ end
 concommand.Add("gfa", GM.ccgfa)
 
 function GM:PlayerShouldTakeDamage(victim, attacker)
-    if attacker:IsValid() and attacker:IsPlayer() and (victim:Team() == attacker:Team() and server_settings.Bool("mp_friendlyfire") == false) then
+    if attacker:IsValid() and attacker:IsPlayer() and (victim ~= attacker and victim:Team() == attacker:Team() and GetConVar("mp_friendlyfire"):GetBool() == false) then
         return false
     else
         return true
@@ -1033,6 +1097,28 @@ concommand.Add("gf_vote_nextround", GM.vote)
 concommand.Add("gf_vote_restartmap", GM.vote)
 concommand.Add("gf_teamvote_resetflag", GM.vote)
 
+-- concommand.Add("gf_test", function(pl, cmd, args)
+--     local self = gmod.GetGamemode()
+--     local hitpos = pl:GetEyeTrace().HitPos
+
+--     local crate = ents.Create("gf_dropcrate")
+--     crate:SetPos(hitpos + Vector(0, 0, 500))
+--     crate:Spawn()
+--     self:AddRoundEntity(crate)
+-- end)
+
+-- concommand.Add("gf_test2", function(pl, cmd, args)
+--     local hitEnt = pl:GetEyeTrace().Entity
+
+--     if hitEnt then
+--         local spawnflags = hitEnt:GetSpawnFlags()
+--         PrintMessage(HUD_PRINTTALK, "spawnflags " .. tostring(spawnflags))
+
+--         local keyvalues = hitEnt:GetKeyValues()
+--         PrintTable(keyvalues)
+--     end
+-- end)
+
 --"Players
 function GM:ClosePlayer(pl, quit)
     local plid
@@ -1150,6 +1236,9 @@ function GM:PlayerRealSpawn(pl, prefspawn)
         pl:SetEyeAngles(Angle(0, spawn:GetAngles().y, 0))
 
         if self.geof.rounds[self.geof.round.cur].weapons == 2 then
+            pl:Give("weapon_crowbar")
+            pl:Give("weapon_physcannon")
+            
             local priClass = self.geof.players[plid].pri
             local secClass = self.geof.players[plid].sec
             local primary = weapons.Get(priClass)
