@@ -1,0 +1,69 @@
+//-------------------------------------------------------------------------
+//
+// Game data for GeoForts Reloaded
+//
+//-------------------------------------------------------------------------
+
+@include "base.fgd"
+
+@BaseClass color(32 16 240) = GeoFortsClass []
+
+@BaseClass color(32 128 225) = GeoFortsAltClass []
+
+@BaseClass = GeoFortsTeamSkin
+[
+	skin(choices) : "GeoForts Team (skin)" : 1 : "Choose team for this spawn point." =
+	[
+		1 : "Blue (1)"
+		2 : "Yellow (2)"
+		3 : "Green (3)"
+		4 : "Red (4)"
+	]
+]
+
+@BaseClass = GeoFortsTeamNum
+[
+	TeamNum(choices) : "GeoForts Team" : 1 : "Choose team for this flag." =
+	[
+		1 : "Blue (1)"
+		2 : "Yellow (2)"
+		3 : "Green (3)"
+		4 : "Red (4)"
+	]
+]
+
+@PointClass base(GeoFortsClass, GeoFortsTeamSkin, Angles) studio("models/buildingblocks/playerspawn_1.mdl") = gf_playerspawn :
+	"This entity indicates where the player spawn points will start. " +
+	"Players will be able to manipulate these in build phase to reposition, and utilise these for respawn. " +
+	"Any number of gf_playerspawn entities may be placed in a map, around 3-5 recommended per team. "
+[
+]
+
+@PointClass base(GeoFortsAltClass, GeoFortsTeamSkin, Angles) studio("models/buildingblocks/playerspawn_1.mdl") = gf_qualifyspawn :
+	"This entity indicates where the player spawn point will be for the qualify round. " +
+	"Players will NOT be able to manipulate these, and will only spawn here during the Qualify round. " +
+	"One (1) gf_playerspawn entity should be placed on the map for each team. "
+[
+]
+
+@PointClass base(GeoFortsClass, GeoFortsTeamNum, Angles) studio("models/roller.mdl") = gf_flag :
+	"This entity indicates the starting position of the flag. " +
+	"Players will be able to manipulate these in build phase. " +
+	"One (1) gf_flag entity should be placed on the map for each team. "
+[
+]
+
+@PointClass base(GeoFortsClass, GeoFortsTeamSkin, Angles) studio("models/buildingblocks/blockspawn_1.mdl") = gf_bb_spawner :
+	"This entity indicates where the block spawner platform will spawn at the start of the game. " +
+	"Players will be able to manipulate these in build phase to reposition, and utilise these to spawn blocks for building. " +
+	"Any number of gf_bb_spawner entities may be placed in a map, around 2-4 recommended per team. "
+[
+]
+
+@PointClass base(GeoFortsClass) iconsprite("editor/gf_gametimer.vmt") = gf_gametimer :
+	"An entity that fires events at game state changes."
+[
+	output OnBuild(void) : "Fired when the build phase begins."
+	output OnQualify(void) : "Fired when the qualify phase begins."
+	output OnFight(void) : "Fired when the fight phase begins."
+]
