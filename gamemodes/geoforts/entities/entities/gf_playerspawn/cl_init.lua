@@ -20,6 +20,7 @@ function ENT:Initialize()
     self.y0 = self.y + (-self.y2 / .05) - self.y * 2
     self.w = (self.x2 / .05) - self.x
     self.h = math.abs((self.y2 / .05) + self.y)
+    self.soundPlayed = false
 end
 
 --"
@@ -124,13 +125,18 @@ function ENT:Think()
         if not self.cleared then
             if type(trace.Entity) == "Player" then
                 self.cleared = "WAITING TO CLEAR"
-                self.Entity:EmitSound("buttons/combine_button3.wav")
+                if not self.soundPlayed then
+                    self.Entity:EmitSound("buttons/combine_button3.wav")
+                end
             else
                 self.cleared = "ERROR:\nNON-ORGANIC\nBLOCKAGE"
-                self.Entity:EmitSound("buttons/combine_button1.wav")
+                if not self.soundPlayed then
+                    self.Entity:EmitSound("buttons/combine_button1.wav")
+                end
             end
 
-            self.warn = Color(255, 255, 255, 100)
+            self.warn = Color(255, 145, 0, 143)
+            self.soundPlayed = true 
         else
             local spawntime = self.Entity:GetNWFloat("gfSpT")
             local spawnname = self.Entity:GetNWString("gfSpN")
@@ -142,6 +148,8 @@ function ENT:Think()
                 self.cleared = "Ready"
                 self.warn = nil
             end
+
+            self.soundPlayed = false
         end
     end
 end
