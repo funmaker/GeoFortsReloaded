@@ -45,5 +45,18 @@ function GM:SetRandomPlayerModel(pl)
     end
 end
 
+-- Debug NoClip
+--[[
+function GM:PlayerNoClip( ply, desiredNoClipState )
+	if ( desiredNoClipState ) then
+		print( ply:Name() .. " wants to enter noclip." )
+	else
+		print( ply:Name() .. " wants to leave noclip." )
+	end
+    return true
+end
+]]
+
 include("sweps.lua")
 include("models.lua")
+include("sh_hitmarker.lua")
