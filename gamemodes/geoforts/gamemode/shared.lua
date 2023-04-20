@@ -48,11 +48,6 @@ end
 -- Debug NoClip
 --[[
 function GM:PlayerNoClip( ply, desiredNoClipState )
-	if ( desiredNoClipState ) then
-		print( ply:Name() .. " wants to enter noclip." )
-	else
-		print( ply:Name() .. " wants to leave noclip." )
-	end
     return true
 end
 ]]

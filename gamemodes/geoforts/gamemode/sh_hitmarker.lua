@@ -13,10 +13,7 @@ if SERVER then
 
         local damage = dmginfo:GetDamage()
 
-        print(target)
-        print(target:Health())
-
-
+        -- Play global sound if killed using a lot of damage (e.g. AWP)
         if(damage > 70 and target:Health() - damage <= 0) then
             target:EmitSound("physics/body/body_medium_break3.wav", 511, 80, 1, CHAN_AUTO, nil, 26)
         end
@@ -39,7 +36,7 @@ if CLIENT then
 
         LocalPlayer():EmitSound("hitmarker.wav", SNDLVL_NONE, 100, 1, CHAN_STATIC)
         if(damage > 80) then
-            LocalPlayer():EmitSound("physics/body/body_medium_break3.wav", SNDLVL_NONE, 90 + math.random() * 30, 1, CHAN_STATIC) -- , nil, 114)
+            LocalPlayer():EmitSound("physics/body/body_medium_break3.wav", SNDLVL_NONE, 90 + math.random() * 30, 1, CHAN_STATIC)
         end
     end)
 
